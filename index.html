@@ -1,0 +1,546 @@
+<title>Apartment 2L</title>
+<style>
+body { margin: 0; font-size: 20px; font-family: 'Lora', Georgia, 'Times New Roman', Times, serif; text-rendering: optimizeLegibility; background: #fff; color: #111; }
+.content { max-width: 640px; margin: auto; padding: 0 1em; }
+.header { padding: 3em 0 1.5em; }
+a { color: #184f95; }
+.footer { background: #f4f4f4; font-size: 0.8em; margin-top: 4em; padding: 3em 1.4em; color: #666; line-height: 1.8; }
+.footer .inner { max-width: 640px; margin: 0 auto; }
+.footer .label { font-family: 'DM Mono', monospace; font-size: 0.7em; letter-spacing: 0.12em; text-transform: uppercase; color: #999; margin-bottom: 0.8em; }
+.footer p { padding-bottom: 1em; }
+.footer .meta { font-style: italic; font-size: 0.85em; color: #999; padding-top: 0.5em; }
+h1 { font-family: 'Lora', Georgia, serif; font-weight: bold; font-size: 2.6em; line-height: 1.15; margin-bottom: 0.3em; }
+h2 { font-family: 'Lora', Georgia, serif; font-size: 1.5em; line-height: 1.2; margin-bottom: 0.4em; margin-top: 1.5em; }
+.subhead { font-family: 'Lora', Georgia, serif; font-style: italic; color: #555; margin-bottom: 0.5em; }
+.byline { font-size: 0.85em; font-style: italic; color: #555; }
+p { line-height: 1.6; margin: 0; padding-bottom: 1.2em; }
+strong { font-weight: 600; }
+.chart-note { font-size: 0.8em; font-style: italic; color: #999; padding-top: 0.5em; padding-bottom: 1.5em; line-height: 1.6; }
+
+@media (max-width: 640px) {
+  body { font-size: 18px; }
+  .content { padding-left: 0.5em; padding-right: 0.5em; }
+}
+
+/* ── Scrolly ── */
+.scrolly-container { position: relative; margin-bottom: 1.2em; }
+
+.sticky-thing {
+  position: sticky; top: 0; z-index: 1;
+  height: 100vh; height: 100svh; overflow: hidden;
+  background: #f5f5f5;
+}
+
+.steps-container {
+  position: relative; z-index: 10;
+  margin-top: -100vh; margin-top: -100svh;
+  padding-bottom: 0;
+}
+
+.step {
+  height: 100vh; height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0 2.5em 3em;
+}
+#step-0 { height: 50vh; height: 50svh; }
+#step-3 { padding-bottom: 100vh; padding-bottom: 100svh; }
+
+.step > * {
+  max-width: 320px;
+  background: rgba(255,255,255,0.93);
+  padding: 1.2em 1.4em;
+  color: #111;
+}
+
+.step .step-body {
+  font-size: 0.8em;
+  color: #555;
+  line-height: 1.6;
+  margin: 0; padding: 0 !important;
+}
+
+.step-stat {
+  margin-top: 0.6em; padding-top: 0.6em;
+  border-top: 1px solid #e5e5e5;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72em;
+  color: #184f95;
+}
+.step-stat.red { color: #a3392f; }
+
+/* ── Map extras ── */
+#map-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#map-tip {
+  position: absolute; z-index: 20;
+  background: #fff; border: 1px solid #ddd;
+  padding: 0.8em 1em; font-size: 13px;
+  pointer-events: none; opacity: 0; transition: opacity .1s;
+  min-width: 170px; font-family: 'DM Mono', monospace;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+#map-tip .tip-name { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; color: #111; margin-bottom: 0.4em; }
+#map-tip .tip-row { display: flex; justify-content: space-between; gap: 1em; font-size: 10px; color: #999; margin-bottom: 0.15em; }
+#map-tip .tip-row span:last-child { color: #333; }
+
+.map-title {
+  position: absolute; top: 1.5rem; left: 1.5rem; z-index: 5;
+  font-family: 'Lora', serif; font-weight: 700; font-size: 1.35rem; line-height: 1.25;
+  color: #111; max-width: 320px;
+}
+#map-legend { position: absolute; bottom: 1.5rem; right: 1.5rem; opacity: 0; transition: opacity .4s; z-index: 15; }
+#map-legend.show { opacity: 1; }
+.leg-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: #888; margin-bottom: 0.3em; }
+.leg-ticks { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 9px; color: #888; margin-top: 0.3em; width: 150px; }
+
+/* ── Charts (full-width, plain) ── */
+.chart-outer { max-width: 800px; margin: 0 auto; padding: 0 1em 0.5em; }
+.chart-outer svg { width: 100%; height: auto; display: block; }
+.chart-legend{ display:flex; flex-wrap:wrap; gap:9px 14px; margin-top:10px; font-family:'DM Mono',monospace; font-size:.68rem; color:#555; }
+.chart-legend .swatch{ display:inline-flex; align-items:center; gap:5px; cursor:pointer; }
+.chart-legend .swatch i{ width:10px; height:10px; display:inline-block; border-radius:1px; flex:none; }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+
+<div class="content">
+  <div class="header">
+    <h1>How a New Yorker is living rent free because of broken, unchecked renting subsidy</h1>
+    <p class="subhead">A tenant's lawsuit against his landlord surfaced a filing that contradicted itself, and a citywide gap in how New York tracks the housing it says is still protected.</p>
+    <p class="byline">By Amanda Fernandez</p>
+  </div>
+
+  <p>There was a time you could pay less than $500 a month in rent in New York City.</p>
+
+  <p>In the 1980s, Apartment 2L at 157 Huron Street in Greenpoint, Brooklyn, a rent-stabilized unit, rented for $438.68 a month. Today, rents across the city average $1,748 a month. Rent stabilization, a decades-old, state system capping how much a landlord can raise rent each year, is meant to keep certain apartments affordable. That Greenpoint, Brooklyn apartment now rents for $2,600, even though it is supposed to be rent-stabilized.</p>
+
+  <p>That's what Samuel O'Hana, current tenant of the apartment, discovered during a lawsuit he filed against his landlord. He came to New York from the UK in August 2014 on a Fulbright to study creative writing at The New School. A single bedroom in the apartment at $700 a month served O'Hana's needs through graduate school and beyond. When his wife, Alexandra, moved in with him, they started renting the whole unit, signing a lease on May 15, 2017 for $2,600 a month.</p>
+
+  <p>The lease labeled the apartment "non-regulated," and O'Hana was paying roughly 1.7 times what the unit would have legally cost. Had its rent kept climbing on schedule since 2007, the last year DHCR's own records show the unit as rent-stabilized, the rent would have been around $1,552 a month.</p>
+</div>
+
+<div class="chart-outer" id="timeline-wrap"></div>
+<div class="content"><p class="chart-note">Sources: DHCR rent registration history, 157 Huron St. Apt. 2L (1984–2007); NYC Rent Guidelines Board Apartment Orders #39–48. No public record exists for what was actually charged between 2008–2016. Hover any point for the exact figure.</p></div>
+
+<div class="content">
+  <p>His lawsuit, filed in April 2022, is still pending, but while it plays out, O'Hana and his wife haven't had to pay rent, which has freed up money they otherwise wouldn't have had. "We were able to live in this apartment for all these years, rent free, as a result of the lawsuit," O'Hana said. "And because of that, we were able to have a child. You have to be much wealthier than we are, usually, to have a kid in New York City. But we were able to do it."</p>
+
+  <p>As the city's own housing survey defines the term, "Private, unregulated rental units are commonly referred to as 'market-rate' because their rents are not regulated," a category that includes newer buildings never subject to stabilization, smaller exempt buildings, and units "legally removed from regulation." Whether O'Hana's unit was "legally removed from regulation," or the landlord decided not to observe its regulated status, is the status in dispute brought by his lawsuit.</p>
+
+  <p>In theory: rent stabilization should lower cost-of-living burdens for tenants. But in an analysis comparing areas where stabilized units are densest, we found it's ineffective. In Bushwick, where there's the highest concentration of rent-stabilized buildings out of any ZIP code in NYC (roughly one for every 14 renter households living there), renters are still severely burdened, spending 50% or more of their income on rent, at a rate of 29.3%, almost identical to the citywide median of 29.5%. Where rent-stabilized housing is most concentrated, it isn't alleviating rent burdens enough.</p>
+
+  <h2>The citywide picture</h2>
+  <p>Citywide, more than half a million renter households pay 50% or more of their income on rent every month. Meanwhile, in the past year, landlords filed more than 114,000 eviction cases, a vast majority of them over nonpayment.</p>
+</div>
+
+<div class="scrolly-container" id="scrolly-map">
+  <div class="sticky-thing" id="map-container">
+    <div class="map-title">Where Rent Stabilization Works, and Where It Doesn't</div>
+    <svg id="map-svg"></svg>
+    <div id="map-legend">
+      <div class="leg-label">Severely Burdened</div>
+      <svg id="leg-svg" width="150" height="9" style="display:block;border-radius:1px"></svg>
+      <div class="leg-ticks"><span>15%</span><span>30%</span><span>45%+</span></div>
+    </div>
+    <div id="map-tip">
+      <div class="tip-name" id="tt-name"></div>
+      <div class="tip-row"><span>Severely burdened</span><span id="tt-burden"></span></div>
+      <div class="tip-row"><span>Stabilized density</span><span id="tt-density"></span></div>
+      <div class="tip-row"><span>Buildings</span><span id="tt-buildings"></span></div>
+    </div>
+  </div>
+
+  <div class="steps-container">
+    <div class="step" id="step-0">
+      <div>
+        <p class="step-body">"If you're paying 30 cents on every dollar for the roof over your head," said Sateesh Nori, a law professor and housing justice advocate, "that means if you lose your job, if you get sick, if you have a health crisis in your family, you're going to fall behind on your rent."</p>
+      </div>
+    </div>
+    <div class="step" id="step-1">
+      <div>
+        <p class="step-body">Jill Naamane, a director at the U.S. Government Accountability Office, says "if you look at the rent prices for the lower quality apartments, there were just kind of steady increases." Rents at the top of the market spiked in the pandemic, she said, "but then kind of came back down to the levels that it was at beforehand."</p>
+      </div>
+    </div>
+    <div class="step" id="step-2">
+      <div>
+        <p class="step-body">Almost nobody checks whether a unit is still protected. What ties an apartment to its status, or strips it away, is a filing sitting in a state database that nobody looks at unless the tenant asks.</p>
+        <div class="step-stat">The dot marks O'Hana's ZIP, 11222 (Greenpoint): 3rd-densest for stabilization citywide, 18.5% severely burdened</div>
+      </div>
+    </div>
+    <div class="step" id="step-3">
+      <div>
+        <p class="step-body">The Bronx has the highest share of severely burdened renters in the city, despite real stabilized supply. Staten Island has almost no stabilized housing at all. Manhattan and Brooklyn have the densest stabilized housing and the lowest burden of the five.</p>
+        <div class="step-stat red">Bronx: 35.9% severely burdened, despite 7,504 stabilized buildings<br>Staten Island: fewer than 5 stabilized buildings per 1,000 renters</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="content"><p class="chart-note">Sources: NYS DHCR 2024 building registrations; Census ACS Table B25070. Hover any ZIP code for its numbers.</p></div>
+
+<div class="content">
+  <p>New York's housing safety net (roughly a million rent-stabilized apartments, over 100 thousand NYCHA units, and a Section 8 voucher program) was built to absorb pressure at this scale. It isn't enough.</p>
+
+  <h2>Apartment 2L, by the numbers</h2>
+  <p>None of that protected O'Hana's apartment, because none of it is measured at that resolution: a ZIP code's statistics don't move when one unit quietly disappears from the regulated count.</p>
+</div>
+
+<div class="chart-outer" id="bar-wrap"></div>
+<div class="content"><p class="chart-note">Source: Census ACS Table B25070. Shares are renter-household-weighted.</p></div>
+
+<div class="content">
+  <p>O'Hana didn't start out asking about his apartment's status. He learned what rent stabilization was while researching his landlord's basic obligations when repairs went unaddressed. He was told the unit wasn't rent-stabilized. So he requested the registration history himself, and what came back was a filing that contradicted itself: the same 2008 record that declared the unit permanently exempt for "High Rent Vacancy" also listed a lease renewal, not a vacancy, as the reason for the change. Nobody at DHCR caught the contradiction. It sat in a filing for nine years until one tenant, chasing a repair request, thought to ask.</p>
+
+  <h2>What the city is doing</h2>
+  <p>Whether that loss in apartments is like O'Hana's case or not depends on if anyone is actually checking. Right now, the city is approaching the issue from a different angle. This spring, the Rent Guidelines Board voted 7-1 for the first two-year rent freeze in the board's history. Previously, it had only frozen rents three times, from its founding in 1969 to its last freeze in 2020. With the board now controlled by six of Mayor Zohran Mamdani's appointees, their vote to lock in zero-percent increases in rents would mean roughly a million stabilized leases frozen through September 2027. Mamdani called it "a historic victory for New York City tenants." But a freeze only helps a unit the city still counts as stabilized. It can't reach one that was quietly reclassified as exempt back in 2008. Freeze or no freeze, the over 100 thousand reclassified homes will still face rent increases.</p>
+
+  <p>The 2019 Housing Stability and Tenant Protection Act closed the loophole O'Hana's building used: high-rent decontrol and high-rent/high-income decontrol no longer exist, so a unit can't be deregulated today just because rent or income crosses a threshold. The law also killed the 20-percent vacancy bonus, capped MCI increases at 2 percent a year with a 30-year sunset, capped recoverable individual-improvement costs at $15,000 per 15 years, and made discounted "preferential" rents permanent for the life of a tenancy. The deregulation O'Hana is suing over happened in 2008, eleven years before HSTPA existed, so his case turns entirely on whether the old rules were actually satisfied at the time, not on what the law requires now. HSTPA shut the door prospectively. It didn't reopen the ones already closed behind it.</p>
+
+  <h2>Income, not just regulation</h2>
+  <p>Part of why dense rent-stabilized housing doesn't reliably lower burden comes down to income, not just regulation. More than 40 percent of households in rent-stabilized units were still rent-burdened in 2023, according to Hayley Raetz, Policy Director at the NYU Furman Center, "likely due to the fact that households in rent-stabilized units generally have lower incomes than those in market-rate units."</p>
+
+  <p>That year, she said, the median household income in a rent-stabilized household was $60,000, compared to close to $91,000 for a household in a private market unit. Raetz also pushed back on a common assumption about the stock itself: rent-stabilized housing isn't entirely made up of unsubsidized, pre-1974 buildings. Those account for only about two-thirds of the city's stabilized units, with the rest stabilized because of public financing or a tax-incentive program, the same kind of arrangement at the center of the deregulation fight at buildings like 157 Huron Street.</p>
+
+  <p>On what would actually move the needle, Raetz pointed to supply: "The literature shows that increasing the supply of housing reduces or moderates rent growth at both the city and neighborhood levels."</p>
+
+  <p>In other words: what would have actually helped O'Hana isn't a freeze. It's the thing he ended up doing for himself, almost by accident, asking a state agency to show its work. Nothing about that process is built for tenants; there's no public tool that lets someone type in an address and see whether their apartment's status still matches its paper trail, the way O'Hana eventually had to request his, page by page, going back to 1984. Until something like that exists, the next Apartment 2L stays exactly as findable as this one was: not at all, unless the person living in it happens to ask.</p>
+
+  <p>But new construction alone isn't enough, Raetz said. It "needs to be paired with policy interventions to reach the lowest-income households, including rental assistance vouchers, new subsidized affordable housing, and the preservation of existing affordable and public housing."</p>
+
+  <p>A "stabilized" label doesn't guarantee low rent burden, for several concrete reasons. Rent-stabilized building counts aren't even fully public; DHCR doesn't release which specific buildings have stabilized units, only aggregated totals by state assembly and senate district; researchers at the Furman Center have had to reconstruct building-level counts by pulling the "rent stabilized" line item off individual property tax bills instead. Substantively, newer stabilized units built under tax-abatement programs are pegged to an income level at move-in, so a tenant who later loses a job or takes a pay cut becomes burdened even though the unit itself stays technically stabilized. Landlords can also offset a building's lower-earning stabilized units by raising rents on its market-rate units instead, pushing the burden onto other tenants in the same building. Wages, meanwhile, haven't kept pace with the rent increases regulators still allow, so a household can slide into burden purely on flat income, with no change to their unit's regulatory status at all. And for "legacy" buildings (those grandfathered into stabilization decades ago, outside any government program with income caps to enforce), landlords report only their total building income to the city each year, not rent figures for each individual unit, making it genuinely difficult for DHCR or the city's Department of Finance to verify what any single apartment's rent actually is, or to catch an improper increase.</p>
+</div>
+
+<div class="footer">
+  <div class="inner">
+    <div class="label">Author's note</div>
+    <p>This story started with Samuel O'Hana, not with a dataset. I heard about his lawsuit against his landlord at 157 Huron Street, a case where an apartment that had been legally rent-stabilized for decades got quietly reclassified as exempt in 2008, on a filing whose own stated reason didn't hold together. Reviewing his rent registration history independently, the state's own paperwork backed up the parts of his account that mattered most: the unit really had been stabilized as recently as 2007, and the 2008 filing that took it off the books really did contradict itself.</p>
+    <p>That's when the Furman Center's research on citywide deregulation became useful (roughly 349,000 rent-stabilized apartments removed from the rolls since 1994, by their count), not as the starting point of the story, but as confirmation that what happened to O'Hana's apartment wasn't unique. To check whether his neighborhood was representative of anything citywide, I built my own dataset, joining DHCR's 2024 building registrations against Census rent-burden figures for every ZIP code in New York. That's how I found the pattern that ended up anchoring the piece: Bushwick has more rent-stabilized housing than anywhere else in the city, and its renters are burdened at almost exactly the citywide rate anyway.</p>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ================= TIMELINE ================= */
+(function(){
+  var registered = [[1984,438.68],[1986,465.00],[1987,465.00],[1988,506.85],[1989,506.85],[1990,537.26],[1991,566.80],[1992,592.30],[1993,615.99],[1994,634.47],[1996,820.65],[1997,861.68],[1998,878.91],[1999,896.68],[2000,932.33],[2001,932.33],[2002,969.64],[2003,996.34],[2004,1041.18],[2005,1103.00],[2006,1134.00],[2007,1232.03]];
+  var stabilized = [[2007,1232.03],[2008,1269.00],[2009,1326.11],[2010,1365.89],[2011,1396.62],[2012,1448.99],[2013,1477.97],[2014,1537.09],[2015,1552.46],[2016,1552.46],[2017,1552.46]];
+  var actual = [[2007,1232.03],[2017,2600]];
+
+  var el = document.getElementById('timeline-wrap');
+  var W = 760, H = 460, M = {top:50, right:26, bottom:34, left:56};
+  var svg = d3.select(el).append('svg').attr('viewBox','0 0 '+W+' '+H).attr('preserveAspectRatio','xMidYMid meet');
+
+  var x = d3.scaleLinear().domain([1984,2017]).range([M.left, W-M.right]);
+  var y = d3.scaleLinear().domain([0,2800]).range([H-M.bottom, M.top]);
+  var line = d3.line().x(function(d){return x(d[0]);}).y(function(d){return y(d[1]);});
+
+  svg.append('text').attr('x', W/2).attr('y', 22).attr('text-anchor','middle')
+    .attr('font-family',"'Lora',serif").attr('font-weight',700).attr('font-size',15).attr('fill','#111')
+    .text("Apartment 2L's Rent, With and Without Stabilization");
+  svg.append('text').attr('x', W/2).attr('y', 39).attr('text-anchor','middle')
+    .attr('font-family',"'Lora',serif").attr('font-style','italic').attr('font-size',11.5).attr('fill','#666')
+    .text('1984–2017: what the unit was legally charged, vs. what it would have cost had it stayed on the books');
+
+  svg.append('g').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1', M.left).attr('x2', W-M.right).attr('y1', function(d){return y(d);}).attr('y2', function(d){return y(d);})
+    .attr('stroke', '#eee');
+  svg.append('g').selectAll('text').data(y.ticks(5)).join('text')
+    .attr('x', M.left-8).attr('y', function(d){return y(d)+3;}).attr('text-anchor','end')
+    .attr('font-family',"'DM Mono',monospace").attr('font-size',10).attr('fill','#4d4d4d')
+    .text(function(d){return '$'+d.toLocaleString();});
+  svg.append('g').selectAll('text').data(x.ticks(6)).join('text')
+    .attr('x', function(d){return x(d);}).attr('y', H-10).attr('text-anchor','middle')
+    .attr('font-family',"'DM Mono',monospace").attr('font-size',10).attr('fill','#4d4d4d')
+    .text(function(d){return d;});
+
+  svg.append('line').attr('x1', x(2008)).attr('x2', x(2008)).attr('y1', M.top).attr('y2', H-M.bottom)
+    .attr('stroke','#ccc').attr('stroke-dasharray','2,3');
+
+  svg.append('path').datum(registered).attr('d', line).attr('fill','none').attr('stroke','#595959').attr('stroke-width',2);
+  svg.append('path').datum(stabilized).attr('d', line).attr('fill','none').attr('stroke','#184f95').attr('stroke-width',2);
+  svg.append('path').datum(actual).attr('d', line).attr('fill','none').attr('stroke','#a3392f').attr('stroke-width',2).attr('stroke-dasharray','6,4');
+
+  var tip = d3.select(el).append('div').style('position','absolute').style('pointer-events','none')
+    .style('opacity',0).style('background','#fff').style('border','1px solid #ddd')
+    .style('padding','.5em .7em').style('font-family',"'DM Mono',monospace").style('font-size','12px')
+    .style('box-shadow','0 2px 8px rgba(0,0,0,.08)').style('transition','opacity .1s');
+  d3.select(el).style('position','relative');
+
+  function dots(data, color, r){
+    svg.append('g').selectAll('circle').data(data).join('circle')
+      .attr('cx', function(d){return x(d[0]);}).attr('cy', function(d){return y(d[1]);})
+      .attr('r', r).attr('fill', color).style('cursor','pointer')
+      .on('pointerenter pointermove', function(evt,d){
+        var b = el.getBoundingClientRect();
+        tip.html('<b>'+d[0]+'</b><br>$'+d[1].toLocaleString(undefined,{minimumFractionDigits:2}))
+          .style('left', (evt.clientX-b.left+10)+'px').style('top', (evt.clientY-b.top-30)+'px')
+          .style('opacity',1);
+        d3.select(this).attr('r', r+2.5);
+      })
+      .on('pointerleave', function(){ tip.style('opacity',0); d3.select(this).attr('r', r); });
+  }
+  dots(registered, '#595959', 2.6);
+  dots(stabilized.filter(function(d){return d[0]===2007 || d[0]===2017;}), '#184f95', 3.4);
+  dots(actual, '#a3392f', 3.4);
+
+  function lbl(yearVal, val, text, anchor, color, weight){
+    svg.append('text').attr('x', x(yearVal)).attr('y', y(val))
+      .attr('text-anchor', anchor).attr('font-family',"'DM Mono',monospace").attr('font-size',11)
+      .attr('font-weight', weight||400).attr('fill', color).text(text);
+  }
+  lbl(1984.3, 610, '$438.68 (1984)', 'start', '#595959');
+  lbl(2006.7, 1360, '$1,232.03 (2007), last certified', 'end', '#595959');
+  lbl(2008.3, 2490, '2008: declared "permanently exempt"', 'start', '#666666');
+  lbl(2016.7, 1440, '$1,552, if still stabilized', 'end', '#184f95', 600);
+  lbl(2016.7, 2670, "$2,600, O'Hana's rent today", 'end', '#a3392f', 600);
+})();
+
+/* ================= BOROUGH BAR ================= */
+(function(){
+  var brackets = ["Under 10%","10–14.9%","15–19.9%","20–24.9%","25–29.9%","30–34.9%","35–39.9%","40–49.9%","50%+"];
+  var data = {
+    "Brooklyn":      {pct:[5.5,8.9,11.9,11.8,10.9,8.5,6.1,8.1,28.2], buildings:16926},
+    "Manhattan":     {pct:[6.8,10.3,12.2,11.9,10.7,9.1,5.7,7.8,25.5], buildings:13729},
+    "Queens":        {pct:[4.5,8.6,11.2,11.9,10.7,9.2,7.1,8.6,28.2], buildings:8880},
+    "Bronx":         {pct:[4.1,7.3,9.3,9.6,9.5,8.9,6.3,9.1,35.9], buildings:7504},
+    "Staten Island": {pct:[4.4,9.9,11.1,8.7,9.2,8.7,7.3,8.6,32.0], buildings:239}
+  };
+  var boroughs = ["Brooklyn","Manhattan","Queens","Bronx","Staten Island"];
+  var colors = d3.quantize(d3.interpolateRgb("#eaf2fc","#184f95"), brackets.length);
+
+  var el = document.getElementById('bar-wrap');
+  var W = 760, H = 370, M = {top:60, right:20, bottom:28, left:170};
+  var svg = d3.select(el).append('svg').attr('viewBox','0 0 '+W+' '+H).attr('preserveAspectRatio','xMidYMid meet');
+
+  svg.append('text').attr('x', W/2).attr('y', 20).attr('text-anchor','middle')
+    .attr('font-family',"'Lora',serif").attr('font-weight',700).attr('font-size',15).attr('fill','#111')
+    .text('Rent Burden by Borough, Full Breakdown');
+  svg.append('text').attr('x', W/2).attr('y', 37).attr('text-anchor','middle')
+    .attr('font-family',"'Lora',serif").attr('font-style','italic').attr('font-size',11.5).attr('fill','#666')
+    .text('Share of renter households at each rent-to-income level');
+
+  var y = d3.scaleBand().domain(boroughs).range([M.top, H-M.bottom]).paddingInner(0.42);
+  var x = d3.scaleLinear().domain([0,100]).range([M.left, W-M.right]);
+
+  svg.append('g').selectAll('line').data([0,25,50,75,100]).join('line')
+    .attr('x1', function(d){return x(d);}).attr('x2', function(d){return x(d);})
+    .attr('y1', M.top-6).attr('y2', H-M.bottom)
+    .attr('stroke', '#eee');
+  svg.append('g').selectAll('text').data([0,25,50,75,100]).join('text')
+    .attr('x', function(d){return x(d);}).attr('y', H-M.bottom+16).attr('text-anchor','middle')
+    .attr('font-family',"'DM Mono',monospace").attr('font-size',9.5).attr('fill','#999')
+    .text(function(d){return d+'%';});
+
+  var tip = d3.select(el).append('div').style('position','absolute').style('pointer-events','none')
+    .style('opacity',0).style('background','#fff').style('border','1px solid #ddd')
+    .style('padding','.5em .7em').style('font-family',"'DM Mono',monospace").style('font-size','12px')
+    .style('box-shadow','0 2px 8px rgba(0,0,0,.08)').style('transition','opacity .1s');
+  d3.select(el).style('position','relative');
+
+  boroughs.forEach(function(b){
+    var d = data[b];
+    var cum = 0;
+    var band = y.bandwidth();
+    var rowY = y(b);
+
+    svg.append('text').attr('x', 4).attr('y', rowY + band*0.42)
+      .attr('font-family',"'Lora',serif").attr('font-weight',700).attr('font-size',13).attr('fill','#333333').text(b);
+    svg.append('text').attr('x', 4).attr('y', rowY + band*0.42 + 14)
+      .attr('font-family',"'DM Mono',monospace").attr('font-size',9.5).attr('fill','#737373')
+      .text(d.buildings.toLocaleString()+' stabilized buildings');
+
+    d.pct.forEach(function(p, i){
+      svg.append('rect')
+        .attr('x', x(cum)).attr('y', rowY).attr('width', x(cum+p)-x(cum)).attr('height', band)
+        .attr('fill', colors[i]).attr('class','bar-seg').attr('data-bracket', i).style('cursor','pointer')
+        .on('pointerenter pointermove', function(evt){
+          var b0 = el.getBoundingClientRect();
+          tip.html('<b>'+b+'</b><br>'+brackets[i]+' of income on rent<br>'+p.toFixed(1)+'% of renter households')
+            .style('left', (evt.clientX-b0.left+10)+'px').style('top', (evt.clientY-b0.top-30)+'px')
+            .style('opacity',1);
+        })
+        .on('pointerleave', function(){ tip.style('opacity',0); });
+      cum += p;
+    });
+  });
+
+  var legend = d3.select(el).append('div').attr('class','chart-legend');
+  brackets.forEach(function(b, i){
+    var sw = legend.append('span').attr('class','swatch')
+      .on('pointerenter', function(){
+        d3.selectAll('.bar-seg').style('opacity', function(){
+          return this.getAttribute('data-bracket') === String(i) ? 1 : 0.2;
+        });
+      })
+      .on('pointerleave', function(){ d3.selectAll('.bar-seg').style('opacity', 1); });
+    sw.append('i').style('background', colors[i]);
+    sw.append('span').text(b);
+  });
+})();
+
+/* ================= SCROLLY MAP ================= */
+(function(){
+  var mapSvg = d3.select('#map-svg');
+  var mapTip = document.getElementById('map-tip');
+  var mapLeg = document.getElementById('map-legend');
+  var tipOn = false, shapes = null, valid = null, projection = null, markerLayer = null;
+  var curStep = -1;
+
+  var colorScale = d3.scaleLinear().domain([15,21,27,33,39,45])
+    .range(["#f7f3ea","#cfe0f2","#8fb8e0","#4a85c4","#1f4e8c","#0a2d5c"]).clamp(true);
+  var highlightMap = {
+    2: { dot:'11222', color:'#b23a2f', label:'11222, Greenpoint' },
+    3: { boroughs: {'Bronx':'#b23a2f','Staten Island':'#0a2d5c','Manhattan':'#4a85c4','Brooklyn':'#4a85c4'} }
+  };
+
+  Promise.all([
+    d3.json('nyc_zips.geojson'),
+    d3.csv('zip_rentstab_vs_burden.csv', d3.autoType)
+  ]).then(function(res){
+    var geo = res[0], rows = res[1];
+    var byZip = new Map(rows.map(function(r){ return [String(r.zip), r]; }));
+    geo.features.forEach(function(f){ f.properties.data = byZip.get(String(f.properties.zip)) || null; });
+    valid = { type:'FeatureCollection', features: geo.features.filter(function(f){ return f.properties.data; }) };
+
+    var el = document.getElementById('map-container');
+    var W = el.clientWidth, H = el.clientHeight;
+    mapSvg.attr('viewBox','0 0 '+W+' '+H);
+    projection = d3.geoMercator().fitSize([W,H], valid);
+    var path = d3.geoPath(projection);
+
+    shapes = mapSvg.selectAll('path').data(valid.features).join('path')
+      .attr('d', path).attr('stroke','#fff').attr('stroke-width',.5)
+      .attr('fill', function(f){ return colorScale(f.properties.data.pct_burden_50_plus); });
+
+    // Rent-stabilized building density, as red bubbles, matches the original PDF chart.
+    var maxDensity = d3.max(rows, function(r){ return r.rentstab_density; });
+    var rScale = d3.scaleSqrt().domain([0, maxDensity]).range([1, 13]);
+    mapSvg.append('g').selectAll('circle').data(valid.features).join('circle')
+      .attr('cx', function(f){ return projection(d3.geoCentroid(f))[0]; })
+      .attr('cy', function(f){ return projection(d3.geoCentroid(f))[1]; })
+      .attr('r', function(f){ return rScale(f.properties.data.rentstab_density); })
+      .attr('fill', '#b23a2f').attr('opacity', .55).attr('pointer-events', 'none');
+
+    var sizeLeg = mapSvg.append('g').attr('transform', 'translate(20,'+(H-74)+')');
+    sizeLeg.append('text').attr('x',0).attr('y',-8)
+      .attr('font-family',"'DM Mono',monospace").attr('font-size',9).attr('fill','#888')
+      .text('Stabilized buildings / 1,000 renters');
+    var scx = 10;
+    [10,30,50,70].forEach(function(sVal){
+      sizeLeg.append('circle').attr('cx',scx).attr('cy',20).attr('r', rScale(sVal))
+        .attr('fill','#b23a2f').attr('opacity',.55);
+      sizeLeg.append('text').attr('x',scx).attr('y',40).attr('text-anchor','middle')
+        .attr('font-family',"'DM Mono',monospace").attr('font-size',9).attr('fill','#888').text(sVal);
+      scx += 44;
+    });
+
+    markerLayer = mapSvg.append('g');
+
+    mapLeg.classList.add('show');
+    tipOn = true;
+
+    shapes
+      .on('mouseenter', function(e,f){
+        if(!tipOn) return;
+        var d = f.properties.data;
+        d3.select(this).attr('stroke','#333').attr('stroke-width',1.2);
+        document.getElementById('tt-name').textContent = d.zip+' · '+d.borough;
+        document.getElementById('tt-burden').textContent = d.pct_burden_50_plus+'%';
+        document.getElementById('tt-density').textContent = d.rentstab_density.toFixed(1)+' / 1,000';
+        document.getElementById('tt-buildings').textContent = d.n_rentstab_buildings.toLocaleString();
+        mapTip.style.opacity = '1'; posTip(e);
+      })
+      .on('mousemove', function(e){ if(tipOn) posTip(e); })
+      .on('mouseleave', function(e,f){
+        if(!tipOn) return;
+        d3.select(this).attr('stroke','#fff').attr('stroke-width',.5);
+        mapTip.style.opacity = '0';
+      });
+
+    var ls = d3.select('#leg-svg');
+    var defs = ls.append('defs');
+    var gr = defs.append('linearGradient').attr('id','lg').attr('x1','0%').attr('x2','100%');
+    ["#f7f3ea","#cfe0f2","#8fb8e0","#4a85c4","#1f4e8c","#0a2d5c"].forEach(function(c,i){
+      gr.append('stop').attr('offset', (i/5*100)+'%').attr('stop-color', c);
+    });
+    ls.append('rect').attr('width',150).attr('height',9).attr('rx',1).attr('fill','url(#lg)');
+  }).catch(function(err){
+    console.error(err);
+  });
+
+  function posTip(e){
+    var r = document.getElementById('map-container').getBoundingClientRect();
+    var x = e.clientX-r.left+12, y = e.clientY-r.top-8;
+    var tw = mapTip.offsetWidth, th = mapTip.offsetHeight;
+    if(x+tw > r.width-8) x = e.clientX-r.left-tw-12;
+    if(y+th > r.height-8) y = e.clientY-r.top-th-8;
+    mapTip.style.left = x+'px'; mapTip.style.top = y+'px';
+  }
+
+  function applyStep(s){
+    curStep = s;
+    if(!shapes || !valid) return;
+
+    var spec = highlightMap[s];
+    if(markerLayer) markerLayer.selectAll('*').remove();
+
+    if(spec && spec.boroughs){
+      shapes.transition().duration(400).attr('fill', function(f){
+        return spec.boroughs[f.properties.data.borough] || colorScale(f.properties.data.pct_burden_50_plus);
+      });
+    } else {
+      shapes.transition().duration(400).attr('fill', function(f){
+        return colorScale(f.properties.data.pct_burden_50_plus);
+      });
+    }
+
+    if(spec && spec.dot){
+      var feat = valid.features.filter(function(f){ return f.properties.zip === spec.dot; })[0];
+      if(feat && markerLayer){
+        var c = projection(d3.geoCentroid(feat));
+        markerLayer.append('circle')
+          .attr('cx', c[0]).attr('cy', c[1]).attr('r', 0)
+          .attr('fill', spec.color).attr('stroke', '#fff').attr('stroke-width', 1.5)
+          .transition().duration(400).attr('r', 7);
+        markerLayer.append('text')
+          .attr('x', c[0]+11).attr('y', c[1]-9)
+          .attr('font-family',"'DM Mono',monospace").attr('font-size',11).attr('font-weight',700)
+          .attr('fill', spec.color).attr('opacity', 0)
+          .text(spec.label || spec.dot)
+          .transition().duration(400).attr('opacity', 1);
+      }
+    }
+  }
+
+  var stepEls = Array.prototype.slice.call(document.querySelectorAll('#scrolly-map .step'));
+  var lastActive = null;
+  function pickActiveStep(){
+    var vMid = window.innerHeight / 2;
+    var best = null, bestDist = Infinity;
+    stepEls.forEach(function(el){
+      var r = el.getBoundingClientRect();
+      if(r.bottom < 0 || r.top > window.innerHeight) return;
+      var mid = r.top + r.height / 2;
+      var d = Math.abs(mid - vMid);
+      if(d < bestDist){ bestDist = d; best = el; }
+    });
+    if(best && best.id !== lastActive){
+      lastActive = best.id;
+      applyStep(parseInt(best.id.replace('step-',''), 10));
+    }
+  }
+  // Continuous rAF loop rather than relying solely on scroll events, so this
+  // keeps working even if scroll events don't propagate the way expected.
+  (function loop(){ pickActiveStep(); requestAnimationFrame(loop); })();
+  window.addEventListener('resize', function(){
+    if(valid){
+      var el = document.getElementById('map-container');
+      mapSvg.attr('viewBox','0 0 '+el.clientWidth+' '+el.clientHeight);
+      projection.fitSize([el.clientWidth, el.clientHeight], valid);
+      shapes.attr('d', d3.geoPath(projection));
+    }
+  });
+})();
+</script>
